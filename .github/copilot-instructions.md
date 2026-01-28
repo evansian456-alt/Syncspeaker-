@@ -21,7 +21,7 @@ SyncSpeaker is a simple web application built with vanilla HTML, CSS, and JavaSc
 - Use HTML5 semantic elements where appropriate
 - Maintain proper indentation (4 spaces)
 - Keep all content in a single `index.html` file for simplicity
-- Use self-closing tags for void elements (e.g., `<meta />`, `<link />`)
+- Write void elements without closing slashes (e.g., `<meta>`, `<link>`) following HTML5 conventions
 
 ### CSS
 - Write CSS inline within `<style>` tags in the HTML file
@@ -69,7 +69,7 @@ SyncSpeaker is a simple web application built with vanilla HTML, CSS, and JavaSc
 - Do not introduce build tools or compilation steps
 - Avoid inline styles in HTML (use style blocks instead)
 - Do not use jQuery or other JavaScript libraries
-- Avoid global namespace pollution - use IIFE or modules pattern
+- Avoid global namespace pollution - wrap code in IIFE (Immediately Invoked Function Expressions) when needed
 
 ## Testing and Validation
 
