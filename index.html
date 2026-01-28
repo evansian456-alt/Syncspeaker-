@@ -25,6 +25,7 @@
     
     .container {
       background: rgba(255, 255, 255, 0.1);
+      -webkit-backdrop-filter: blur(10px);
       backdrop-filter: blur(10px);
       border-radius: 20px;
       padding: 40px;
@@ -73,6 +74,16 @@
       transform: translateY(0);
     }
     
+    button:focus {
+      outline: 2px solid rgba(255, 255, 255, 0.8);
+      outline-offset: 2px;
+    }
+    
+    button:focus-visible {
+      outline: 3px solid rgba(255, 255, 255, 0.9);
+      outline-offset: 3px;
+    }
+    
     #playBtn {
       background: #4caf50;
       color: white;
@@ -115,8 +126,8 @@
     <p class="subtitle">Minimal Smoke Test UI</p>
     
     <div class="controls">
-      <button id="playBtn">▶️ Play</button>
-      <button id="stopBtn">⏹️ Stop</button>
+      <button id="playBtn" aria-label="Play audio">▶️ Play</button>
+      <button id="stopBtn" aria-label="Stop audio">⏹️ Stop</button>
     </div>
     
     <div id="status">Ready</div>
