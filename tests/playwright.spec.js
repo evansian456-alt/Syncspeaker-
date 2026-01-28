@@ -40,8 +40,8 @@ test.describe('SyncSpeaker Demo', () => {
     // Click play button
     await playBtn.click();
     
-    // Status should update (may be "Playing" or "Paused" depending on video)
-    await expect(status).not.toHaveText('Ready');
+    // Status should update to Playing
+    await expect(status).toHaveText('Playing');
   });
 
   test('should update status when stop button is clicked', async ({ page }) => {
@@ -53,7 +53,7 @@ test.describe('SyncSpeaker Demo', () => {
     
     // Click play then stop
     await playBtn.click();
-    await page.waitForTimeout(500); // Wait a bit
+    await expect(stopBtn).toBeEnabled(); // Wait for stop button to be enabled
     await stopBtn.click();
     
     // Status should be stopped
@@ -68,7 +68,7 @@ test.describe('SyncSpeaker Demo', () => {
     
     // Check for track element
     const track = page.locator('track');
-    await expect(track).toBeVisible();
+    await expect(track).toHaveCount(1);
     await expect(track).toHaveAttribute('src', 'media/sample.vtt');
   });
 });
