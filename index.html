@@ -83,11 +83,11 @@
   <h1>🔊 SyncSpeaker</h1>
   
   <div class="controls">
-    <button id="playBtn">▶ Play</button>
-    <button id="stopBtn">⏹ Stop</button>
+    <button id="playBtn" aria-label="Play audio">▶ Play</button>
+    <button id="stopBtn" aria-label="Stop audio">⏹ Stop</button>
   </div>
   
-  <div id="status">Ready</div>
+  <div id="status" role="status" aria-live="polite">Ready</div>
   
   <div class="footer">Smoke test UI - v1.0</div>
 
