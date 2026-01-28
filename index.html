@@ -35,6 +35,7 @@ body {
 h1 {
     font-size: 3rem;
     margin-bottom: 20px;
+    color: #ff6b6b;
     background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -56,9 +57,11 @@ button {
     font-weight: bold;
     transition: transform 0.2s, box-shadow 0.2s;
 }
-button:hover {
+button:hover, button:focus-visible {
     transform: scale(1.05);
     box-shadow: 0 5px 20px rgba(78, 205, 196, 0.4);
+    outline: 2px solid #4ecdc4;
+    outline-offset: 2px;
 }
 @media (max-width: 768px) {
     h1 {
@@ -76,11 +79,11 @@ button:hover {
 </head>
 <body>
 <div class="bg"></div>
-<div class="container">
+<main class="container">
     <h1>SyncSpeaker</h1>
     <p>Welcome to SyncSpeaker - Your audio synchronization solution</p>
-    <button id="startBtn">Get Started</button>
-</div>
+    <button id="startBtn" aria-label="Get started with SyncSpeaker">Get Started</button>
+</main>
 <script>
     console.log('SyncSpeaker loaded successfully');
     
