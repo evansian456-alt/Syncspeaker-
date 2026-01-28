@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>SyncSpeaker</title>
   <meta name="description" content="SyncSpeaker — simple landing page" />
+  <meta name="author" content="evansian456-alt" />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -70,6 +71,21 @@
       border-radius: 8px;
       cursor: pointer;
       font-weight: 700;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255, 59, 59, 0.4);
+    }
+
+    button:focus {
+      outline: 3px solid #ff6b6b;
+      outline-offset: 3px;
+    }
+
+    button:active {
+      transform: translateY(0);
     }
 
     button.secondary {
@@ -78,6 +94,62 @@
       color: #fff;
       padding: 8px 12px;
       font-weight: 600;
+    }
+
+    button.secondary:hover {
+      background: rgba(255,255,255,0.05);
+      border-color: rgba(255,255,255,0.25);
+      box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+    }
+
+    button.secondary:focus {
+      outline: 3px solid rgba(255,255,255,0.5);
+      outline-offset: 3px;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    button:disabled:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    audio {
+      width: 100%;
+      max-width: 500px;
+      margin: 16px auto;
+      display: block;
+      border-radius: 8px;
+    }
+
+    audio:focus {
+      outline: 3px solid #ff6b6b;
+      outline-offset: 3px;
+    }
+
+    .audio-section {
+      margin-top: 20px;
+      padding: 16px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 8px;
+    }
+
+    .audio-section h2 {
+      font-size: 1.5rem;
+      margin-bottom: 12px;
+    }
+
+    .status {
+      margin: 12px 0;
+      padding: 8px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 6px;
+      font-size: 0.9rem;
+      color: #bbb;
     }
 
     .footer {
@@ -111,6 +183,39 @@
         <button class="secondary" id="demoInfo">Info</button>
       </div>
     </div>
+
+    <div class="card audio-section">
+      <h2>Audio Player</h2>
+      <p style="margin-bottom: 12px; color: #ddd; font-size: 0.95rem;">
+        Accessible audio player with custom controls and demo tone fallback
+      </p>
+
+      <!-- Audio element with captions support -->
+      <audio id="audioPlayer" controls>
+        <!-- Source will be set dynamically when audio is loaded -->
+        Your browser does not support the audio element.
+      </audio>
+
+      <div class="status" id="audioStatus" role="status" aria-live="polite">
+        No audio loaded. Click "Play Demo Tone" to generate a sample tone.
+      </div>
+
+      <!-- Custom accessible controls -->
+      <div class="controls">
+        <button id="playBtn" aria-label="Play audio">
+          ▶ Play
+        </button>
+        <button id="pauseBtn" class="secondary" aria-label="Pause audio">
+          ⏸ Pause
+        </button>
+        <button id="stopBtn" class="secondary" aria-label="Stop audio">
+          ⏹ Stop
+        </button>
+        <button id="demoToneBtn" aria-label="Play demo tone">
+          🎵 Play Demo Tone
+        </button>
+      </div>
+    </div>
   </div>
 
   <div class="footer">Built by evansian456-alt</div>
@@ -125,8 +230,146 @@
       alert('Open the developer console for more info.');
     });
 
+    // Audio player controls
+    const audioPlayer = document.getElementById('audioPlayer');
+    const playBtn = document.getElementById('playBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const demoToneBtn = document.getElementById('demoToneBtn');
+    const audioStatus = document.getElementById('audioStatus');
+
+    let audioContext = null;
+    let oscillator = null;
+    let gainNode = null;
+    let isDemoTonePlaying = false;
+
+    // Update status message
+    function updateStatus(message) {
+      audioStatus.textContent = message;
+    }
+
+    // Play button
+    playBtn.addEventListener('click', function () {
+      if (audioPlayer.src && audioPlayer.src !== window.location.href) {
+        audioPlayer.play()
+          .then(() => updateStatus('Playing audio...'))
+          .catch(err => updateStatus('Error playing audio: ' + err.message));
+      } else {
+        updateStatus('No audio source loaded. Try the demo tone instead.');
+      }
+    });
+
+    // Pause button
+    pauseBtn.addEventListener('click', function () {
+      if (!audioPlayer.paused) {
+        audioPlayer.pause();
+        updateStatus('Audio paused.');
+      }
+    });
+
+    // Stop button
+    stopBtn.addEventListener('click', function () {
+      audioPlayer.pause();
+      audioPlayer.currentTime = 0;
+      updateStatus('Audio stopped.');
+      
+      // Stop demo tone if playing
+      if (isDemoTonePlaying) {
+        stopDemoTone();
+      }
+    });
+
+    // Demo tone generator using Web Audio API
+    function playDemoTone() {
+      if (isDemoTonePlaying) {
+        stopDemoTone();
+        return;
+      }
+
+      try {
+        // Disable button to prevent rapid clicks
+        demoToneBtn.disabled = true;
+        
+        // Reuse or create audio context
+        if (!audioContext || audioContext.state === 'closed') {
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        
+        // Create oscillator for tone generation
+        oscillator = audioContext.createOscillator();
+        gainNode = audioContext.createGain();
+        
+        // Configure oscillator (440 Hz = A4 note)
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
+        
+        // Configure gain (volume) with fade in/out
+        gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.1);
+        gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 2);
+        
+        // Connect nodes
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        // Start playing
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 2);
+        
+        isDemoTonePlaying = true;
+        demoToneBtn.textContent = '⏹ Stop Demo Tone';
+        updateStatus('Playing demo tone (440 Hz, 2 seconds)...');
+        
+        // Auto-stop after 2 seconds
+        oscillator.onended = function() {
+          if (isDemoTonePlaying) {
+            stopDemoTone();
+            updateStatus('Demo tone finished.');
+          }
+        };
+        
+      } catch (err) {
+        updateStatus('Error creating demo tone: ' + err.message);
+        console.error('Web Audio API error:', err);
+        demoToneBtn.disabled = false;
+      }
+    }
+
+    function stopDemoTone() {
+      if (oscillator) {
+        // Disconnect and clean up oscillator
+        try {
+          oscillator.disconnect();
+        } catch (e) {
+          // Already disconnected
+        }
+        oscillator = null;
+      }
+      if (gainNode) {
+        gainNode.disconnect();
+        gainNode = null;
+      }
+      isDemoTonePlaying = false;
+      demoToneBtn.textContent = '🎵 Play Demo Tone';
+      demoToneBtn.disabled = false;
+    }
+
+    demoToneBtn.addEventListener('click', playDemoTone);
+
+    // Update UI based on audio player events
+    audioPlayer.addEventListener('play', () => updateStatus('Playing audio...'));
+    audioPlayer.addEventListener('pause', () => {
+      // Only show paused message if not at the beginning (which indicates stop was called)
+      if (audioPlayer.currentTime > 0 && !audioPlayer.ended) {
+        updateStatus('Audio paused.');
+      }
+    });
+    audioPlayer.addEventListener('ended', () => updateStatus('Audio playback ended.'));
+    audioPlayer.addEventListener('error', () => updateStatus('Audio error occurred.'));
+
     // Confirm load in console for debugging
     console.log('index.html loaded: no parse errors.');
+    console.log('Audio player and Web Audio API demo tone ready.');
   </script>
 </body>
 </html>
