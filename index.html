@@ -1,19 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SyncSpeaker</title>
-<style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body {
-    font-family: Impact, Arial Black, sans-serif;
-    background: #000;
-    color: #fff;
-    min-height: 100vh;
-    text-align: center;
-    padding: 20px;
-}
-.bg {
-    position:
-html
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SyncSpeaker</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: Impact, 'Arial Black', sans-serif;
+      background: #000;
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+    }
+    .container { max-width: 600px; width: 100%; }
+    h1 { font-size: 3rem; margin-bottom: 1rem; }
+    p { font-size: 1.2rem; margin-bottom: 2rem; }
+    button {
+      background: #fff;
+      color: #000;
+      border: none;
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:hover { background: #ccc; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>SyncSpeaker</h1>
+    <p>Your synchronized voice streaming platform</p>
+    <button onclick="handleClick()">Get Started</button>
+  </div>
+  <script>
+    console.log('SyncSpeaker landing page loaded');
+    function handleClick() {
+      console.log('Get Started button clicked');
+      alert('Welcome to SyncSpeaker!');
+    }
+  </script>
+</body>
+</html>
